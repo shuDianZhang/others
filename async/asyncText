@@ -1,0 +1,75 @@
+//引入话题的两段代码
+//第一段  
+<script>
+    window.onload = function() {
+        alert(1);
+        setTimeout(function() {
+            alert('This is in interval');
+        },0);
+        alert(2);
+    }
+</script>
+
+//第二段
+<div class="asyncBox" style="width: 100px; height: 100px; background-color: red;"></div>
+<div class="asyncBox" style="width: 100px; height: 100px; background-color: green;"></div>
+<div class="asyncBox" style="width: 100px; height: 100px; background-color: blue;"></div>
+<script>
+    window.onload = function() {
+        var box = document.getElementsByClassName('asyncBox');
+        for(var i=0 ; i<3 ; i++){
+             box[i].onclick = function() {
+                 alert(this.style.backgroundColor);
+             }
+        }
+    }
+</script>
+
+
+同步和异步
+
+
+异步 -> 阻塞  -> 任何有可能阻塞整个js应用的操作，最好使用异步来进行处理，例如: ajax请求 ....
+同步 -> 非阻塞
+
+常见的异步操作： 定时器、事件绑定函数、ajax请求 ...
+
+为什么定时器、事件绑定函数、ajax请求是异步的呢？
+    因为定时器、事件绑定函数、ajax请求这些操作，都有不确定性，没有确定的执行时间，容易造成整个js应用的阻塞。
+
+为什么JS先执行完同步操作，再执行异步操作呢？
+     ...   
+
+
+异步操作的发展史:
+    1. 使用回调函数  
+    2. 使用promise对象  ->  jquery中有deferred对象（延迟对象）
+    3. generater函数（ES6）
+    4. 异步的终极解决方案  await/async （ES7）
+    
+
+
+promise对象：
+   function returnPromise() {
+       return new promise(function(resolve,reject){
+           if() {
+               resolve(success);   ->   success 传值到 执行成功时候 的回调函数中去
+           } else {
+               reject(error);      ->   success 传值到 执行失败时候 的回调函数中去
+           }
+       });
+   }
+
+
+   returnPromise.then(function(){
+                                       //  执行成功时候的操作
+   },function(err){
+       console.log(err);
+   });
+
+
+
+
+
+
+
