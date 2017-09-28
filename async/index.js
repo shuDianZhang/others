@@ -11,29 +11,26 @@ function getStyle(obj, attr) {
 function moveTo(obj, direction, distance, cb) {
     var posX = parseInt(getStyle(obj, 'left'));
     var posY = parseInt(getStyle(obj, 'top'));
+    var distance = direction === 'right' || direction === 'bottom' ? distance : -distance;
+    var speed = direction === 'right' || direction === 'bottom' ? 5 : -5;
+    clearInterval(obj.timer);
     if (direction === 'left' || direction === 'right') {
-        var distance = direction === 'right' ? distance : -distance,
-            speed = direction === 'right' ? 5 : -5;
-        var target = posX + distance;              //目标位置
-        var timer = '';
-        timer = setInterval(function () {
+        var target = posX + distance;
+        obj.timer = setInterval(function() {
             posX = posX + speed;
             moveBox.style.left = posX + 'px';
             if (posX === target) {
-                clearInterval(timer);
+                clearInterval(obj.timer);
                 cb && cb();
             }
         }, 10);
     } else if (direction === 'top' || direction === 'bottom') {
-        var distance = direction === 'bottom' ? distance : -distance,
-            speed = direction === 'bottom' ? 5 : -5;
         var target = posY + distance;
-        var timer = '';
-        timer = setInterval(function () {
+        obj.timer = setInterval(function() {
             posY = posY + speed;
             moveBox.style.top = posY + 'px';
             if (posY === target) {
-                clearInterval(timer);
+                clearInterval(obj.timer);
                 cb && cb();
             }
         }, 10);
