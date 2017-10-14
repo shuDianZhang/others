@@ -7,6 +7,12 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
+        .lock,
+        .time,
+        .date {
+            user-select: none;
+        }
+
         .container {
             position: relative;
             width: 116px;
@@ -38,7 +44,7 @@
         }
 
         .frontVideo {
-            float:left;
+            float: left;
             margin-left: 26px;
             margin: 0px 3px 0px 33px;
             border: 1px solid #000000;
@@ -57,27 +63,59 @@
         .screen {
             height: 190px;
             width: 110px;
-            background-image: url('./wallet.jpg');
+            background-image: url('./img/wallet.jpg');
             background-size: contain;
             border: 1px solid #000000;
             margin: 14px auto 0px;
         }
 
-        .floatLight {
-            height: 30px;
-            width: 30px;
-            background-image: -webkit-linear-gradient(45deg, #C6C6C6 0%, #fdfdfd 45%, #ffffff 50%, #fdfdfd 55%, #D2D2D2 100%);
+        .menu {
+            height: 8px;
+            background-image: url('./img/menu.jpg');
+            background-size: contain;
         }
 
-        .screen > .lock {
-            margin-top: 165px;
+        .time {
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: 100;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .date {
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: 100;
+            text-align: center;
+            margin-top: -2px;
+        }
+
+        .screen>.lock {
+            margin-top: 102px;
             font-size: 12px;
             text-align: center;
-            color: #333333;
             transform: scale(0.8);
             background-clip: text;
             -webkit-background-clip: text;
-            /* webkit-text-fill-color: transparent; */
+            webkit-text-fill-color: transparent;
+            background-color: #333333;
+            background-image: -webkit-linear-gradient(-45deg, rgba(1, 1, 1, 0.6) 40%, #ffffff 50%, rgba(1, 1, 1, 0.6) 60%);
+            animation: floatLight 1s infinite;
+            background-blend-mode: hard-light;
+            background-position: 0;
+            -webkit-background-position: 0;
+            background-size: 200%;
+            -webkit-user-select: none;
+        }
+
+        @-webkit-keyframes floatLight {
+            from {
+                background-position: 100%;
+            }
+            to {
+                background-position: 0;
+            }
         }
 
         .homeKey {
@@ -105,7 +143,7 @@
             top: 0px;
             right: 06px;
         }
-        
+
         .thickness:nth-of-type(4) {
             left: 6px;
             bottom: 0px;
@@ -138,8 +176,10 @@
                 <div class="frontVideo"></div>
                 <div class="listenArea"></div>
                 <div class="screen">
-                    <div class="floatLight"></div>
-                    <p class="lock">>滑动来解锁</p>
+                    <div class="menu"></div>
+                    <div class="time">23:09</div>
+                    <div class="date">12月13日&nbsp;星期六</div>
+                    <p class="lock">&gt;滑动来解锁</p>
                 </div>
                 <div class="homeKey"></div>
             </div>
@@ -153,22 +193,65 @@
 </body>
 <script>
     var speed = 0;
-    var rotate = 0;
+    var rotateX = 0;
     var iphoneFive = document.getElementsByClassName('iphoneFive')[0];
-    document.onmousedown = function(ev) {
-        var ev = ev || event;
-        var posX = ev.clientX;
-        document.onmousemove = function(ev) {
+    var showTime = document.getElementsByClassName('time')[0];
+    var date = document.getElementsByClassName('date')[0];
+    document.onmousedown = function (ev) {
+        var changeNum = true;
+        var directive = 1;
+        var timer = setInterval(function () {
+            changeNum = true;
+        }, 20);
+        document.onmousemove = function (ev) {
             var ev = ev || event;
-            var moveX = ev.clientX;
-            var directive = moveX - posX <= 0 ? -1 : 1; 
-            rotate += directive;
-            iphoneFive.style.WebkitTransform = 'rotateY('+rotate+'deg)';
+            if (changeNum) {
+                startPosX = ev.clientX;
+                changeNum = false;
+            }
+            setTimeout(function () {
+                var moveTarget = ev.clientX;
+                directive = moveTarget - startPosX < 0 ? 2 : -2;
+            }, 20);
+            rotateX += directive;
+            iphoneFive.style.WebkitTransform = 'rotate3d(1,1,1,' + rotateX + 'deg)';
         }
-        document.onmouseup = function(){
+        document.onmouseup = function () {
             document.onmousemove = null;
         }
     }
 
+    //渲染时间至手机屏幕
+    function renderTime(whatTime, whatData) {
+        function getTime() {
+            var date = new Date();
+            var hour = date.getHours(),
+                minute = date.getMinutes(),
+                Month = date.getMonth() + 1,
+                dates = date.getDate(),
+                days = date.getDay();
+            whatTime.innerHTML = formatOne(hour) + ':' + formatOne(minute);
+            whatData.innerHTML = formatOne(Month) + '月' + formatOne(dates) + '日&nbsp;星期' + formatDay(days);
+        }
+        getTime();
+        setInterval(function () {
+            getTime();
+        }, 5000);
+    }
+
+    renderTime(showTime, date);
+
+    //转化星期几的格式     6 -> 六
+    function formatDay(num) {
+        var day = ['一', '二', '三', '四', '五', '六', '七'];
+        return day[num - 1];
+    }
+
+    //转化格式 例如： 2 -> 02
+    function formatOne(num) {
+        return num < 10 ? '0' + num : num;
+    }
+
 </script>
+
 </html>
