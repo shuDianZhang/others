@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .DiyMenu {
+            position: fixed;
+            display: block;
+            width: 200px;
+            perspective: 600px;
+        }
+
+        .item {
+            font-family: '微软雅黑';
+            text-align: center;
+            height: 30px;
+            border: 1px solid #000000;
+            line-height: 30px;
+            margin-top: -1px;
+            transition: transform ease-in-out .3s;
+        }
+
+        .item:hover {
+            background-color: #000000;
+            color: #ffffff;
+            transform: rotateY(30deg);
+            -webkit-transform: rotateY(30deg);
+            box-shadow: 3px 3px 2px #888888;
+        }
+    </style>
+</head>
+
+<body>
+</body>
+<script>
+    var menuItem = ['rotateX', 'rotateY', 'rotate3D'];
+    document.oncontextmenu = function(ev) {
+        var ev = ev || window.event,
+            menu = document.getElementsByClassName('DiyMenu')[0],
+            index = 0,
+            itemString = '',
+            posX = ev.clientX,
+            posY = ev.clientY;
+        stopDefault(ev);
+        if (menu != undefined) {                       
+            menu.style.display = 'block';
+            menu.style.left = posX + 'px';
+            menu.style.top = posY + 'px';
+            return;
+        }
+        for (index; index < menuItem.length; index++) {
+            itemString += '<div class="item">' + menuItem[index] + '</div>';
+        }
+        var Div = document.createElement('div');
+        document.body.appendChild(Div);
+        Div.className = 'DiyMenu';
+        Div.innerHTML = itemString;
+    }
+    function stopDefault(ev) {
+        if (ev || ev.preventDefault) {
+            ev.preventDefault();
+        } else {
+            window.event.returnValue = false;
+            return false;
+        }
+    }
+    function appendCss(cssString) {
+        var DiyMenuStyle = document.createElement('style');
+        DiyMenuStyle.type = 'text/css';
+        if(DiyMenuStyle.styleSheet) {   //ie
+            DiyMenuStyle.styleSheet.cssText = cssString;
+        } else {                     //w3c
+            var cssText = document.createTextNode(cssString);            //创建文本节点
+            DiyMenuStyle.appendChild(cssText);                           //将文本节点添加至元素节点
+        }
+        document.head.appendChild(DiyMenuStyle);
+    }
+</script>
+
+</html>
