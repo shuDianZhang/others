@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">{{a}}</div>
+</body>
+<script src="./vue.js"></script>
+<script>
+    var model = new Vue({
+        el: '#app',
+        data: {
+            a: 1
+        }
+    });
+    model.a = 10;
+
+</script>
+
+
+<script>
+    //初始化
+    function Vue(options) {
+        this._init(options)
+    }
+    Vue.prototype._init = function (options) {
+        //状态的初始化
+        this._initState();
+
+        //挂载到节点
+        if (options.el) {
+            this.$mount(options.el);
+        }
+    }
+
+    //状态的初始化
+
+    //状态初始化会的作用作用是把data下面的数据字段都设计成响应式的：
+    // 数据获取(getter)的时候收集其关联到的指令，数据变化(setter)的时候通知指令进
+    // 行视图的更新。_initState主要包括以下几个函数
+
+    Vue.prototype._initState = function () {
+        this._initProps();   //组件中的props初始化 
+        this._initMeta();
+        this._initMethods();  //把methods方法绑定到实例上
+        this._initData();     //数据的初始化
+        this._initComputed();  //computed属性的初始化
+    }
+
+    Vue.prototype._initMethods = function () {
+        var methods = this.$options.methods;
+        if (methods) {
+            for (var key in methods) {
+                this[key] = bind(methods[key], this);
+            }
+        }
+    }
+
+    Vue.prototype._initData = function () {
+        //      ...
+        // observe会遍历data中的字段，对每个字段执行defineReactive操作
+        // 读取字段时，会收集其依赖，这里的依赖是watcher对象的列表
+        // 当设置字段值时， 会对依赖执行notify()操作 
+        observe(data, this)
+    }
+
+    function defineReactive(obj,key,val){
+        var dep = new Dep();
+        Object.defineProperty();  // <----------高能预警，非常重要的函数
+    }
+
+</script>
+
+</html>

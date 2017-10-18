@@ -198,11 +198,13 @@
     var showTime = document.getElementsByClassName('time')[0];
     var date = document.getElementsByClassName('date')[0];
     document.onmousedown = function (ev) {
+        clearInterval(timer);
         var changeNum = true;
         var directive = 1;
         var timer = setInterval(function () {
             changeNum = true;
         }, 20);
+        stopDefault(ev);
         document.onmousemove = function (ev) {
             var ev = ev || event;
             if (changeNum) {
@@ -211,10 +213,11 @@
             }
             setTimeout(function () {
                 var moveTarget = ev.clientX;
-                directive = moveTarget - startPosX < 0 ? 2 : -2;
+                directive = moveTarget - startPosX < 0 ? 5 : -5;
             }, 20);
             rotateX += directive;
             iphoneFive.style.WebkitTransform = 'rotate3d(1,1,1,' + rotateX + 'deg)';
+            stopDefault(ev);
         }
         document.onmouseup = function () {
             document.onmousemove = null;
@@ -252,6 +255,14 @@
         return num < 10 ? '0' + num : num;
     }
 
+    //阻止浏览器默认事件
+    function stopDefault(ev) {
+        if(ev && ev.preventDefault){
+            ev.preventDefault();
+        }else{
+            window.event.returnValue = false;
+            return false;
+        }
+    }
 </script>
-
 </html>
