@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #333333;
+        }
+
+        .ball {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: #ffffff;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            animation: moveBall 2s linear;
+        }
+
+        @keyframes moveBall {
+            0% {
+                transform: translate(0,0);
+            }
+            25% {
+                transform: translate(400px,0);
+            }
+            50% {
+                transform: translate(400px,400px);
+            }
+            75% {
+                transform: translate(0px,400px);
+            }
+            100% {
+                transform: translate(0,0);
+            }
+        }
+
+        /* @keyframes moveBall {
+            0% {
+                top: 0px;
+                left: 0px;
+            }
+            25% {
+                top: 0px;
+                left: 400px;
+            }
+            50% {
+                top: 400px;
+                left: 400px;
+            }
+            75% {
+                top: 400px;
+                left: 0px;
+            }
+            100% {
+                top: 0px;
+                left: 0px;
+            }
+        } */
+    </style>
+</head>
+
+<body>
+    <div class="ball"></div>
+    <div><i></i></div>
+    <div><p></p></div>
+    <div><h1></h1></div>
+    <div><span></span></div>
+    <div><b></b></div>
+    <div><br></div>
+    <div><h2></h2></div>
+    <div><h3></h3></div>
+    <div></div>
+    <div><a></a></div>
+    <div><i></i></div>
+    <div><div><div></div></div></div>
+    <div></div>
+    <div></div>
+</body>
+
+</html>
