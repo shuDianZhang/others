@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        function add(a, b, c) {
+            return a + b + c;
+        }
+
+
+        function createCurry(func, args) {
+            var arity = func.length;                                    //获取func函数的参数个数
+            var args = args || [];
+            return function() {
+                var _args = [].slice.call(arguments);                   //将argumnets转化成真正的数组
+                [].push.apply(_args, args);
+                if (_args.length < arity) {
+                    return createCurry.call(this, func, _args);
+                }
+                return func.apply(this, _args);
+            }
+        }
+
+        // function createCurry(func, args) {
+        //     var funcArgu = func.length;
+        //     var args = args || [];
+        //     return function() {
+        //         var _args = [].slice.call(arguments);          // 将arguments 彻底转化成数组
+        //         [].push.apply(_args,arg);
+        //         if(_args.length < funcArgu){
+        //             return createCurry.call(this,func,_args);
+        //         }
+        //         return func.apply(this,_args);
+        //     }
+        // }
+
+        var _add = createCurry(add)(1)(2)(3);
+        alert(_add);
+    </script>
+</body>
+
+</html>
