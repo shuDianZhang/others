@@ -7,6 +7,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
+        /*  iphone5的样式  */
+
         .lock,
         .time,
         .date {
@@ -165,6 +167,32 @@
             border-radius: 20px;
             transform: translateZ(-16px);
         }
+        /*自定义菜单的样式*/
+
+        .DiyMenu {
+            position: fixed;
+            display: block;
+            width: 200px;
+            perspective: 600px;
+        }
+
+        .item {
+            font-family: '微软雅黑';
+            text-align: center;
+            height: 30px;
+            border: 1px solid #000000;
+            line-height: 30px;
+            margin-top: -1px;
+            transition: transform ease-in-out .3s;
+        }
+
+        .item:hover {
+            background-color: #000000;
+            color: #ffffff;
+            transform: rotateY(30deg);
+            -webkit-transform: rotateY(30deg);
+            box-shadow: 3px 3px 2px #888888;
+        }
     </style>
 </head>
 
@@ -197,32 +225,81 @@
     var iphoneFive = document.getElementsByClassName('iphoneFive')[0];
     var showTime = document.getElementsByClassName('time')[0];
     var date = document.getElementsByClassName('date')[0];
-    document.onmousedown = function (ev) {
-        clearInterval(timer);
-        var changeNum = true;
-        var directive = 1;
-        var timer = setInterval(function () {
-            changeNum = true;
-        }, 20);
-        stopDefault(ev);
-        document.onmousemove = function (ev) {
+
+    // 数字随鼠标的滚动进行变化
+    function flowMouseNum() {
+        var num = 0;
+        document.onmousedown = function () {
             var ev = ev || event;
-            if (changeNum) {
-                startPosX = ev.clientX;
-                changeNum = false;
+            var moveHis = [];
+            var speedInit;
+            var timer = null;
+            moveHis.push(ev.clientX);
+            document.onmousemove = function (ev) {
+                var ev = ev || window.evnet;
+                var movePosX = ev.clientX;
+                moveHis.push(movePosX);
+                if (moveHis.length > 2) {
+                    moveHis.shift();
+                }
+                var dirNum = (moveHis[1] - moveHis[0]);
+                num += dirNum;
+                iphoneFive.style.WebkitTransform = 'rotate3d(1,1,1,' + num + 'deg)';
             }
-            setTimeout(function () {
-                var moveTarget = ev.clientX;
-                directive = moveTarget - startPosX < 0 ? 5 : -5;
-            }, 20);
-            rotateX += directive;
-            iphoneFive.style.WebkitTransform = 'rotate3d(1,1,1,' + rotateX + 'deg)';
-            stopDefault(ev);
-        }
-        document.onmouseup = function () {
-            document.onmousemove = null;
+            document.onmouseup = function () {
+                document.onmousemove = null;
+            }
         }
     }
+
+    flowMouseNum();
+
+
+    //自定义菜单
+    function diyMenu(opts) {
+        var _this = this;
+        this.opts = opts;
+        this.menu = null;
+        document.oncontextmenu = function (ev) {
+            var ev = ev || window.event;
+            _this.init(ev);
+        }
+    }
+    diyMenu.prototype.init = function (ev) {
+        var ev = ev || window.event;
+        this.stopDefault(ev);             //阻止浏览器的默认事件
+        this.createMenu();                //创建自定义菜单
+        this.menuPos(ev);                 //确定自定义菜单的展示位置
+    }
+    diyMenu.prototype.createMenu = function () {
+        if (this.menu) {
+            return;
+        }
+        var itemString = '';
+        this.opts.map(function (value) {
+            itemString += '<div class="item">' + value + '</div>';
+        });
+        var menu = document.createElement('div');
+        menu.className = 'DiyMenu';
+        menu.innerHTML = itemString;
+        document.body.appendChild(menu);
+    }
+    diyMenu.prototype.menuPos = function (ev) {
+        var menu = this.menu;
+        menu = document.getElementsByClassName('DiyMenu')[0];
+        menu.style.left = ev.clientX + 'px';
+        menu.style.top = ev.clientY + 'px';
+    }
+    diyMenu.prototype.stopDefault = function (ev) {
+        if (ev && ev.preventDefault) {
+            ev.preventDefault();
+        } else {
+            window.event.returnValue = false;
+            return false;
+        }
+    }
+    var diyMenu = new diyMenu(['rotateX', 'rotateY', 'rotate3D']);
+
 
     //渲染时间至手机屏幕
     function renderTime(whatTime, whatData) {
@@ -236,13 +313,13 @@
             whatTime.innerHTML = formatOne(hour) + ':' + formatOne(minute);
             whatData.innerHTML = formatOne(Month) + '月' + formatOne(dates) + '日&nbsp;星期' + formatDay(days);
         }
-        getTime();
         setInterval(function () {
             getTime();
-        }, 5000);
+        }, 1000);
+        getTime();
     }
-
     renderTime(showTime, date);
+
 
     //转化星期几的格式     6 -> 六
     function formatDay(num) {
@@ -255,14 +332,32 @@
         return num < 10 ? '0' + num : num;
     }
 
-    //阻止浏览器默认事件
-    function stopDefault(ev) {
-        if(ev && ev.preventDefault){
-            ev.preventDefault();
-        }else{
-            window.event.returnValue = false;
-            return false;
+    //设置样式
+    function appendCss(cssString) {
+        var DiyMenuStyle = document.createElement('style');
+        DiyMenuStyle.type = 'text/css';
+        if (DiyMenuStyle.styleSheet) {   //ie非标准
+            DiyMenuStyle.styleSheet.cssText = cssString;
+        } else {                     //w3c
+            var cssText = document.createTextNode(cssString);            //创建文本节点
+            DiyMenuStyle.appendChild(cssText);                           //将文本节点添加至元素节点
         }
+        document.head.appendChild(DiyMenuStyle);
     }
+
 </script>
+
+<script>
+    var rating = (function () {
+        function init() {
+
+        }
+        return {
+            init: init
+        }
+    }());
+    rating.init(2);
+
+</script>
+
 </html>

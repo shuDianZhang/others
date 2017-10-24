@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div>
+        <p>你好:<span id='nickName'></span></p>
+        <p>你想要做什么:<span id="introduce"></span></p> <br/>
+
+        <input oninput="setName(this)" placeholder="请输入你的姓名">
+
+        <input oninput="setThing(this)" placeholder="输入你要做的是事">
+    </div>
+
+    <script>
+        //视图控制器
+        var userInfo = {};
+        Object.defineProperty(userInfo, "nickName", {
+            get: function () {
+                return document.getElementById('nickName').innerHTML;
+            },
+            set: function (nick) {
+                document.getElementById('nickName').innerHTML = nick;
+            }
+        });
+        Object.defineProperty(userInfo, "introduce", {
+            get: function () {
+                return document.getElementById('introduce').innerHTML;
+            },
+            set: function (introduce) {
+                document.getElementById('introduce').innerHTML = introduce;
+            }
+        });
+        function setName(e) {
+            userInfo.nickName = e.value;
+        }
+        function setThing(e) {
+            userInfo.introduce = e.value;
+        }
+    </script>
+</body>
+
+</html>
