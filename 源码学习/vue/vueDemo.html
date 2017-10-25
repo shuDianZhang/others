@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">{{a}}</div>
+</body>
+<script src="./vue.js"></script>
+<script>
+    var model = new Vue({
+        el: '#app',
+        data: {
+            a: 1
+        }
+    });
+    model.a = 10;
+
+</script>
+
+
+<script>
+    //初始化
+    function Vue(options) {
+        this._init(options)
+    }
+
+    Vue.prototype._init = function(options) {
+        //状态的初始化
+        this._initState();
+
+        //挂载到节点
+        if (options.el) {
+            this.$mount(options.el);
+        }
+    }
+
+    //状态的初始化
+
+    //状态初始化会的作用作用是把data下面的数据字段都设计成响应式的：
+    // 数据获取(getter)的时候收集其关联到的指令，数据变化(setter)的时候通知指令进
+    // 行视图的更新。_initState主要包括以下几个函数
+
+    Vue.prototype._initState = function() {
+        this._initProps();   //组件中的props初始化 
+        this._initMeta();
+        this._initMethods();
+        this._initData();
+        this._initComputed();
+    }
+
+    //把methods方法绑定到实例上
+    Vue.prototype._initMethods = function() {
+        var methods = this.$options.methods;
+        if (methods) {
+            for (var key in methods) {
+                this[key] = bind(methods[key], this);
+            }
+        }
+    }
+
+    //数据的初始化
+    Vue.prototype._initData = function() {
+        //      ...
+        // observe会遍历data中的字段，对每个字段执行defineReactive操作
+        // 读取字段时，会收集其依赖，这里的依赖是watcher对象的列表
+        // 当设置字段值时， 会对依赖执行notify()操作 
+        observe(data, this)
+    }
+
+    function defineReactive(obj, key, val) {
+        var dep = new Dep();
+        Object.defineProperty(obj, key, {           // <---------自定义对象属性 !important
+            enumerable: true,
+            configurable: true,
+            get: function reactiveGetter() {
+                var value = getter ? getter.call(obj) : val;
+                if (Dep.target) {
+                    dep.depend();                   //收集字段的依赖
+                    if (childOb) {                  //收集子对象的依赖
+                        childOb.dep.depend();
+                    }
+                }
+            },
+            set: function reactiveSetter() {
+                //    ...
+                // 此处会调用依赖列表的watcher进行数据视图的同步！ 
+                // watcher会调用directive的更新方法
+                dep.notify();
+            }
+        });
+    }
+
+
+    //computed属性的初始化
+    // 相对于普通的data字段，computed字段会在指令生成前额外生成一个watcher
+    // 此watcher也会加入到依赖列表中去；但是此watcher是lazy的。
+    // 非lazy的watcher会在watcher生成后执行get函数
+    // lazy的watcher  会在computed中的字段读取值时才会调用到其getter函数
+
+    Vue.prototype._initComputed = function() {
+        for (var key in computed) {
+            var userDef = computed[key];
+            var def = {
+                enumerable: true,
+                configurable: true
+            };
+            def.get = makeComputedGetter(userDef, this);
+            Object.defineProperty(this, key, def);
+        }
+    }
+
+    function makeComputedGetter(getter, owner) {
+        var watcher = new Watcher(owner, getter, null, {
+            lazy: true
+        });
+        return function computedGetter() {
+            if (watcher.dirty) {
+                watcher.evaluate();
+            }
+            if (Dep.target) {
+                watcher.depend();
+            }
+            return watcher.value;
+        }
+    }
+
+    //节点的挂载
+    Vue.prototype.$mount = function(el) {
+        // ....
+        this._compile(el);
+        // ....
+        return this;
+    }
+    // 这个compile函数会对DOM节点进行解析，根据指令的不同(如：v-model、
+    // v-text、{{}})等生成link函数；这些link函数最终都会执行到下面代码段
+    // 中的函数，这个函数的作用可以概括为：生成指令并和节点进行关联。
+    // el：指令所在的节点 例子中的{{a}}
+
+    // descriptor: 例子中的解析得到的指令：
+    //    expression:"a"
+    //    filters:undefined
+    //    name:"text"
+
+    vm._bindDir(descriptor, el, host, scope, frag);
+
+    //上述步骤执行完后，vue会依据directive的priority进行排序，然后对指令执行bind操作
+
+    function linkAndCapture(linker, vm) {
+        var originDirCount = vm._directives.length;
+        linker();
+        var dir = vm._directives.slice(originDirCount);
+        dirs.sort(directiveComparator);
+        for (var i = 0, i = dirs.length; i < 1; i++) {
+            // 指令的bind方法：把数据和视图进行关联
+            // 生成watcher实例 通过watcher进行后续的数据和视图同步：
+            // 1、一个双向绑定的元素，如input，通过监听其input or change事件， 有数据更新时，调用directive的set
+            // 2、directive的set调用watcher的set方法
+            dirs[i]._bind();
+        }
+        return dirs;
+    }
+
+    //bind()可以理解为数据和dom的一种绑定，其包括两步：数据和watcher绑定、watcher和指令绑定。 也就是
+    //数据更新是通过watcher通知directive，进而更新view：
+
+    Directive.prototype._bind = function() {
+        //...
+        // watcher的更新回调  用于directive的更新
+        // 当数据更新时会执行到此函数
+        if (this.update) {
+            this._update = function(val, oldVal) {
+                if (!dir._locked) {
+                    dir.update(val, oldVal);
+                }
+            }
+        }
+        // 1. 生成指令的watcher对象
+        var watcher = this._watcher = new Watcher(
+            this.vm,
+            this.expression,
+            this._update,         //callback
+            {
+                filters: this.filters,
+                twoWay: this.twoWay,
+                deep: this.deep,
+                preProcess: preProcess,
+                postProcess: postProcess,
+                scope: this._scope
+            }
+        );
+        if (this.afterBind) {
+            this.afterBind();
+        } else if (this.update) {
+            // 2. 已经绑定了数据的依赖  进行view的更新
+            this.update();
+        }
+        this._bound = true;
+    }
+
+    //watcher实例生成时，会进行数据的依赖绑定
+    export default function Watcher(vm, expOrFn, cb, options) {
+        //...
+        vm._watcher.push(this);
+        //...
+        //get函数的执行主要是收集依赖
+        this.value = this.lazy ? undefined : this.get();
+    }
+
+    Watcher.prototype.get = function() {
+        this.beforeGet();    //依赖配置
+        // ...
+        value = this.getter.call(scope, scope);  //进行收集
+    }
+
+    // 在 beforeGet中进行依赖的配置
+    Watcher.prototype.beforeGet = function() {
+        // 这个设置 会让getter执行时 把watcher作为依赖
+        Dep.target = this;
+        this.newDeps = Object.create(null);
+    }
+    // defineReactive中进行收集
+    export function defineReactive(obj, key, val) {
+        // ...
+        Object.defineProperty(obj, key, {
+            //...
+            get: function reactiveGetter() {
+                //...
+                // 依赖收集
+                if (Dep.target) {
+                    dep.depend()
+                    //...
+                }
+
+                
+
+</script>
+
+</html>

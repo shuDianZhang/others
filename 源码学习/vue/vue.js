@@ -6,13 +6,13 @@
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
-	(global.Vue = factory());
+	(global.Vue = factory()); 
 }(this, (function () { 'use strict';
 
 /*  */
 
 // these helpers produces better vm code in JS engines due to their
-// explicitness and function inlining
+// explicitness(明确性) and function inlining
 function isUndef (v) {
   return v === undefined || v === null
 }
@@ -30,7 +30,7 @@ function isFalse (v) {
 }
 
 /**
- * Check if value is primitive
+ * Check if value is primitive    ->  判断是否是  基本数据类型
  */
 function isPrimitive (value) {
   return (
@@ -45,7 +45,7 @@ function isPrimitive (value) {
  * Objects from primitive values when we know the value
  * is a JSON-compliant type.
  */
-function isObject (obj) {
+function isObject (obj) {        // 判断是否为 引用类型  因为 typeof null == 'object';   typeof function == 'Function'
   return obj !== null && typeof obj === 'object'
 }
 
@@ -54,7 +54,7 @@ function isObject (obj) {
  */
 var _toString = Object.prototype.toString;
 
-function toRawType (value) {
+function toRawType (value) {      // 根据 Object.prototype.toString.call() 返回的 [object type],使用slice()进行字符串的操作，返回数据最终的类型（字符串）;
   return _toString.call(value).slice(8, -1)
 }
 
@@ -74,18 +74,18 @@ function isRegExp (v) {
  * Check if val is a valid array index.
  */
 function isValidArrayIndex (val) {
-  var n = parseFloat(String(val));
-  return n >= 0 && Math.floor(n) === n && isFinite(val)
+  var n = parseFloat(String(val));     //String() 函数把对象值转化成字符串  Number() 函数把对象的值转换为数字。
+  return n >= 0 && Math.floor(n) === n && isFinite(val)   //Math.floor(); 对数字进行向下舍入    Math.ceil(); 对数字进行向上舍入
 }
 
 /**
- * Convert a value to a string that is actually rendered.
+ * Convert a value to a string that is actually rendered.   将一个值转换为实际呈现的字符串
  */
 function toString (val) {
   return val == null
     ? ''
     : typeof val === 'object'
-      ? JSON.stringify(val, null, 2)
+      ? JSON.stringify(val, null, 2)      //JSON.stringify();  将序列（不一定是json）转化JSON 字符串的值     JSON.parse();   将字符串解析出json对象
       : String(val)
 }
 
@@ -100,20 +100,17 @@ function toNumber (val) {
 
 /**
  * Make a map and return a function for checking if a key
- * is in that map.
+ * is in that map.   创建一个映射并返回一个函数，以检查是否在改值在映射中是否存在。
  */
-function makeMap (
-  str,
-  expectsLowerCase
-) {
-  var map = Object.create(null);
+function makeMap(str, expectsLowerCase) {
+  var map = Object.create(null);        //Object.create(); 函数  创建一个对象，该对象的原型对象为函数所传入的参数 即: map._proto_ = null;
   var list = str.split(',');
   for (var i = 0; i < list.length; i++) {
-    map[list[i]] = true;
+     map[list[i]] = true;
   }
   return expectsLowerCase
-    ? function (val) { return map[val.toLowerCase()]; }
-    : function (val) { return map[val]; }
+     ? function(val) { return map[val.toLowerCase()]; }
+     : function(val) { return map[val]; }
 }
 
 /**
@@ -141,47 +138,47 @@ function remove (arr, item) {
 /**
  * Check whether the object has the property.
  */
-var hasOwnProperty = Object.prototype.hasOwnProperty;
+var hasOwnProperty = Object.prototype.hasOwnProperty;    // 对象.hasOwnProperty; 用于检测对象本身（不会查找原型链）的属性是否存在
 function hasOwn (obj, key) {
   return hasOwnProperty.call(obj, key)
 }
 
 /**
- * Create a cached version of a pure function.
+ * Create a cached version of a pure function.     创建一个空函数的缓存版本
  */
-function cached (fn) {
+function cached (fn) {                                               ////////////////////////////////////////////////////////////////////////////////////////
   var cache = Object.create(null);
-  return (function cachedFn (str) {
-    var hit = cache[str];
+  return (function cachedFn (str) {                                   ////////////////////////////////////////////////////////////////////////////////////////
+    var hit = cache[str];      
     return hit || (cache[str] = fn(str))
   })
-}
+}                                                                      ////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Camelize a hyphen-delimited string.
  */
 var camelizeRE = /-(\w)/g;
-var camelize = cached(function (str) {
+var camelize = cached(function (str) {                                 ////////////////////////////////////////////////////////////////////////////////////////
   return str.replace(camelizeRE, function (_, c) { return c ? c.toUpperCase() : ''; })
 });
-
+                                                                       ////////////////////////////////////////////////////////////////////////////////////////
 /**
  * Capitalize a string.
- */
-var capitalize = cached(function (str) {
+ */                         
+var capitalize = cached(function (str) {                               ////////////////////////////////////////////////////////////////////////////////////////
   return str.charAt(0).toUpperCase() + str.slice(1)
 });
-
+                                                                       ////////////////////////////////////////////////////////////////////////////////////////
 /**
  * Hyphenate a camelCase string.
  */
 var hyphenateRE = /\B([A-Z])/g;
 var hyphenate = cached(function (str) {
   return str.replace(hyphenateRE, '-$1').toLowerCase()
-});
+});                                                                     ////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Simple bind, faster than native
+ * Simple bind, faster than native    简单的bind方法，比本地的bind方法要快
  */
 function bind (fn, ctx) {
   function boundFn (a) {
@@ -221,7 +218,7 @@ function extend (to, _from) {
 }
 
 /**
- * Merge an Array of Objects into a single Object.
+ * Merge an Array of Objects into a single Object.     将数组合并至某个对象
  */
 function toObject (arr) {
   var res = {};
@@ -238,7 +235,7 @@ function toObject (arr) {
  * Stubbing args to make Flow happy without leaving useless transpiled code
  * with ...rest (https://flow.org/blog/2017/05/07/Strict-Function-Call-Arity/)
  */
-function noop (a, b, c) {}
+function noop (a, b, c) {}                                         ////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Always return false.
@@ -248,35 +245,35 @@ var no = function (a, b, c) { return false; };
 /**
  * Return same value
  */
-var identity = function (_) { return _; };
+var identity = function (_) { return _; };                      ////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Generate a static keys string from compiler modules.
+ * Generate a static keys string from compiler modules.   
  */
 function genStaticKeys (modules) {
-  return modules.reduce(function (keys, m) {
-    return keys.concat(m.staticKeys || [])
+  return modules.reduce(function (keys, m) {                    //数组中的reduce方法;
+    return keys.concat(m.staticKeys || [])                      //concat拼接数组，类似于数组的push方法 [1,2,3].concat(4,5);   ->  [1,2,3,4,5]
   }, []).join(',')
 }
 
 /**
  * Check if two values are loosely equal - that is,
- * if they are plain objects, do they have the same shape?
+ * if they are plain objects, do they have the same shape?    检查两个值是否相等, 也就是说，如果它们是普通对象，它们是否具有相同的原型？
  */
 function looseEqual (a, b) {
   if (a === b) { return true }
-  var isObjectA = isObject(a);
+  var isObjectA = isObject(a);                                 // isObject();  前面进行了声明，用于判断是否为引用类型
   var isObjectB = isObject(b);
   if (isObjectA && isObjectB) {
     try {
-      var isArrayA = Array.isArray(a);
+      var isArrayA = Array.isArray(a);                         // isArray();方法  类似的还有isNaN();  如果 object 是数组，则为 true；否则为 false。 如果 object 参数不是对象，则返回 false。
       var isArrayB = Array.isArray(b);
       if (isArrayA && isArrayB) {
         return a.length === b.length && a.every(function (e, i) {
           return looseEqual(e, b[i])
         })
       } else if (!isArrayA && !isArrayB) {
-        var keysA = Object.keys(a);
+        var keysA = Object.keys(a);                            // object.keys();方法  返回一个数组，其中包含对象的可枚举属性和方法的名称
         var keysB = Object.keys(b);
         return keysA.length === keysB.length && keysA.every(function (key) {
           return looseEqual(a[key], b[key])
@@ -302,7 +299,7 @@ function looseIndexOf (arr, val) {
   }
   return -1
 }
-
+///////////////////////////////////////////////////////////////////////// 2017 / 10 / 25 ///////////////////////////////////////////////////////////////////////////
 /**
  * Ensure a function is called only once.
  */
