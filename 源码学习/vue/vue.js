@@ -146,7 +146,7 @@ function hasOwn (obj, key) {
 /**
  * Create a cached version of a pure function.     创建一个空函数的缓存版本
  */
-function cached (fn) {                                               ////////////////////////////////////////////////////////////////////////////////////////
+function cached (fn) {                                                ////////////////////////////////////////////////////////////////////////////////////////
   var cache = Object.create(null);
   return (function cachedFn (str) {                                   ////////////////////////////////////////////////////////////////////////////////////////
     var hit = cache[str];      
@@ -303,7 +303,7 @@ function looseIndexOf (arr, val) {
 /**
  * Ensure a function is called only once.
  */
-function once (fn) {
+function once (fn) {                 //once(add(4,5))();
   var called = false;
   return function () {
     if (!called) {
@@ -312,16 +312,16 @@ function once (fn) {
     }
   }
 }
+ 
+var SSR_ATTR = 'data-server-rendered';   // ssr_attr
 
-var SSR_ATTR = 'data-server-rendered';
-
-var ASSET_TYPES = [
+var ASSET_TYPES = [      //  asset_types
   'component',
   'directive',
   'filter'
 ];
 
-var LIFECYCLE_HOOKS = [
+var LIFECYCLE_HOOKS = [   //lifecycle_hooks
   'beforeCreate',
   'created',
   'beforeMount',
@@ -391,7 +391,7 @@ var config = ({
 
   /**
    * Check if an attribute is reserved so that it cannot be used as a component
-   * prop. This is platform-dependent and may be overwritten.
+   * prop. This is platform-dependent and may be overwritten.   检查一个属性是否保留，这样它就不能用作组件的..。这是与平台相关的，可能会被覆盖。
    */
   isReservedAttr: no,
 
@@ -428,8 +428,8 @@ var config = ({
 var emptyObject = Object.freeze({});
 
 /**
- * Check if a string starts with $ or _
- */
+ * Check if a string starts with $ or _          该函数主要用于判断 str 是否为 $ 或 _
+  */
 function isReserved (str) {
   var c = (str + '').charCodeAt(0);
   return c === 0x24 || c === 0x5F
@@ -450,28 +450,28 @@ function def (obj, key, val, enumerable) {
 /**
  * Parse simple path.
  */
-var bailRE = /[^\w.$]/;
+var bailRE = /[^\w.$]/;                         /////////////////////////回去好好学习一遍正则//////////////////////////////////////////
 function parsePath (path) {
   if (bailRE.test(path)) {
     return
   }
   var segments = path.split('.');
   return function (obj) {
-    for (var i = 0; i < segments.length; i++) {
+    for (var i = 0; i < segments.length; i++) { /////////////////////////////////////////////////////////////////////////////////////
       if (!obj) { return }
-      obj = obj[segments[i]];
+      obj = obj[segments[i]];                 /////////////////////////////////////////////////////////////////////////////////////////
     }
     return obj
   }
-}
+}                                             ////////////////////////////////////////////////////////////////////////////////////////
 
 /*  */
 
-// can we use __proto__?
+// can we use __proto__?                     //判断是否能使用  _proto_  ?
 var hasProto = '__proto__' in {};
 
-// Browser environment sniffing
-var inBrowser = typeof window !== 'undefined';
+// Browser environment sniffing               判断执行环境    字符串.indexOf('需要检索的字符串');
+var inBrowser = typeof window !== 'undefined';      //判断是否在浏览器环境内执行
 var UA = inBrowser && window.navigator.userAgent.toLowerCase();
 var isIE = UA && /msie|trident/.test(UA);
 var isIE9 = UA && UA.indexOf('msie 9.0') > 0;
@@ -496,7 +496,7 @@ if (inBrowser) {
     window.addEventListener('test-passive', null, opts);
   } catch (e) {}
 }
-
+/////////////////////////////////////////////////////////////////////////////   2017/10/26   ///////////////////////////////////////////////////////
 // this needs to be lazy-evaled because vue may be required before
 // vue-server-renderer can set VUE_ENV
 var _isServer;
