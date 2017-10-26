@@ -1,16 +1,49 @@
 浏览器渲染页面的过程：
-  1. 获取DOM后分割为多个图层
-  2. 对每个图层的节点计算样式结果（Recalculate style--样式重计算）
-  3. 为每个节点生成图形和位置（Layout--回流和重布局）
-  4. 将每个节点绘制填充到图层位图中（Paint Setup和Paint--重绘）
-  5. 图层作为纹理上传至GPU
-  6. 符合多个图层到页面上生成最终屏幕图像（Composite Layers--图层重组）
 
-解析html以构建dom树 -> 构建渲染树 -> 布局渲染树 -> 绘制渲染树
+(1)构建DOM树,构建渲染树
+    html解析成domTree; css解析生成cssRuleTree(CSS样式规则);这两者结合生成renderingTree(渲染树) 
 
-重绘：代价稍低 -> 引起的原因： 改变的是集合形状，比如改变了背景颜色，这就会触发重绘。
+(2)布局(layout)渲染树     
+    计算每个DOM元素最终在屏幕上显示的大小和位置   
 
-回流和重布局：代价非常高  -> 引起的原因： 元素的尺寸变化，
+(3)绘制(paint)渲染树
+    渲染引擎会遍历渲染树，由用户界面后端层将每个节点绘制出来，按照合理的顺序合并图层然后显示到屏幕上。
+
+重绘(repaint)：
+    代价稍低    -> 引起的原因： 改变的是集合形状，比如改变了背景颜色，这就会触发重绘。
+
+修改时只触发重绘的属性： 
+* color
+* border-style
+* border-radius
+* visibility
+* text-decoration
+* background
+* background-image
+* background-position
+* background-repeat
+* background-size
+* outline-color
+* outline
+* outline-style
+* outline-width
+* box-shadow
+
+
+回流(reflow)和重布局：
+   代价非常高  -> 引起的原因： 元素的尺寸变化，修改盒子模型的相关属性也会触发。
+
+盒子模型相关属性会触发重布局：        定位属性及浮动也会触发重布局：        改变节点内部文字结构也会触发重布局：
+* width                            * top                               * text-align
+* height                           * bottom                            * overflow-y
+* padding                          * left                              * font-family
+* margin                           * right                             * line-height
+* display                          * position                          * font-size
+* border-width                     ...                                 * vertival-align
+* border                                                               ...
+* min-height
+...
+
 
 css3中的GPU硬件加速模式：
 
@@ -19,10 +52,12 @@ css3中的GPU硬件加速模式：
 而图层在GPU中 transform 是不会触发 repaint 的，这一点非常类似3D绘图功能，最终这些使用 transform 的
 图层都会由独立的合成器进程进行处理。
 
+
 如何开启GPU硬件加速模式：
 CSS中以下属性 transitions、transforms、Opacity、等以下属性来触发GPU硬件加速
 如： -webkit-transform:transition3d(0,0,0) 
     -webkit-transform:translateZ(0);
+
 
 
 transform执行顺序： 从右往左执行
