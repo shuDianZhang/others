@@ -498,7 +498,7 @@ if (inBrowser) {
 }
 /////////////////////////////////////////////////////////////////////////////   2017/10/26   ///////////////////////////////////////////////////////
 // this needs to be lazy-evaled because vue may be required before
-// vue-server-renderer can set VUE_ENV
+// vue-server-renderer can set VUE_ENV    这需要被延迟，因为在vue-server-renderer 可以设置 VUE_ENV之前，vue可能是必需的
 var _isServer;
 var isServerRendering = function () {
   if (_isServer === undefined) {
@@ -659,21 +659,21 @@ var Dep = function Dep () {
   this.subs = [];
 };
 
-Dep.prototype.addSub = function addSub (sub) {
+Dep.prototype.addSub = function addSub (sub) {           // 接收的参数为Watcher实例，并把Watcher实例存入记录依赖的数组中
   this.subs.push(sub);
 };
 
-Dep.prototype.removeSub = function removeSub (sub) {
+Dep.prototype.removeSub = function removeSub (sub) {     // 作用是将Watcher实例从记录依赖的数组中移除
   remove(this.subs, sub);
 };
 
-Dep.prototype.depend = function depend () {
+Dep.prototype.depend = function depend () {              // Dep.target上存放这当前需要操作的Watcher实例，调用depend会调用该Watcher实例的addDep方法
   if (Dep.target) {
     Dep.target.addDep(this);
   }
 };
 
-Dep.prototype.notify = function notify () {
+Dep.prototype.notify = function notify () {              //通知依赖数组中所有的watcher进行更新操作
   // stabilize the subscriber list first
   var subs = this.subs.slice();
   for (var i = 0, l = subs.length; i < l; i++) {
@@ -735,7 +735,7 @@ var VNode = function VNode (
 
 var prototypeAccessors = { child: { configurable: true } };
 
-// DEPRECATED: alias for componentInstance for backwards compat.
+// DEPRECATED: alias for componentInstance for backwards compat. 
 /* istanbul ignore next */
 prototypeAccessors.child.get = function () {
   return this.componentInstance
@@ -808,9 +808,10 @@ var arrayMethods = Object.create(arrayProto);[
 ]
 .forEach(function (method) {
   // cache original method
-  var original = arrayProto[method];
+  var original = arrayProto[method];                            //  arrayProto 数组的原型对象
   def(arrayMethods, method, function mutator () {
-    var args = [], len = arguments.length;
+    var args = [],
+        len = arguments.length;
     while ( len-- ) args[ len ] = arguments[ len ];
 
     var result = original.apply(this, args);
@@ -834,7 +835,8 @@ var arrayMethods = Object.create(arrayProto);[
 
 /*  */
 
-var arrayKeys = Object.getOwnPropertyNames(arrayMethods);
+var arrayKeys = Object.getOwnPropertyNames(arrayMethods);    //Object.getOwnPropertyNames()方法返回一个由指定对象的所有自身属性的属性名（包括不可枚举属性但不包括Symbol值作为名称的属性）组成的数组。
+
 
 /**
  * By default, when a reactive property is set, the new value is
@@ -842,8 +844,8 @@ var arrayKeys = Object.getOwnPropertyNames(arrayMethods);
  * we don't want to force conversion because the value may be a nested value
  * under a frozen data structure. Converting it would defeat the optimization.
  */
-var observerState = {
-  shouldConvert: true
+var observerState = {             // 观察的状态？？
+  shouldConvert: true             // 是否转变 ？ 翻转 ？？
 };
 
 /**
@@ -853,12 +855,15 @@ var observerState = {
  * collect dependencies and dispatches updates.
  */
 var Observer = function Observer (value) {
-  this.value = value;
+  this.value = value;               // value是需要被观察的数据对象
   this.dep = new Dep();
   this.vmCount = 0;
+  // 会给value增加__ob__属性，作为数据已经被Observer观察的标志。
   def(value, '__ob__', this);
+  //  如果value是数组，就使用observeArray遍历value，对value中每一个元素调用observe分
+  //  别进行观察。如果value是对象，则使用walk遍历value上每个key，对每个key调用defineReactive来获得该key的set/get控制权。         
   if (Array.isArray(value)) {
-    var augment = hasProto
+    var augment = hasProto           // 判断是否能使用 __proto__ 
       ? protoAugment
       : copyAugment;
     augment(value, arrayMethods, arrayKeys);
@@ -869,23 +874,23 @@ var Observer = function Observer (value) {
 };
 
 /**
- * Walk through each property and convert them into
+ * Walk through each property and convert（转换） them into
  * getter/setters. This method should only be called when
  * value type is Object.
  */
 Observer.prototype.walk = function walk (obj) {
-  var keys = Object.keys(obj);
+  var keys = Object.keys(obj);      
   for (var i = 0; i < keys.length; i++) {
     defineReactive(obj, keys[i], obj[keys[i]]);
   }
 };
 
 /**
- * Observe a list of Array items.
+ * Observe a list of Array items. 
  */
 Observer.prototype.observeArray = function observeArray (items) {
   for (var i = 0, l = items.length; i < l; i++) {
-    observe(items[i]);
+    observe(items[i]);       // observe() 函数最后返回的是 Observer 实例
   }
 };
 
@@ -893,33 +898,33 @@ Observer.prototype.observeArray = function observeArray (items) {
 
 /**
  * Augment an target Object or Array by intercepting
- * the prototype chain using __proto__
+ * the prototype chain using __proto__      通过使用 __proto__ 拦截原型链 来增加目标对象或数组
  */
 function protoAugment (target, src, keys) {
   /* eslint-disable no-proto */
-  target.__proto__ = src;
+  target.__proto__ = src;       // value.__proto__ = arrayMethods;
   /* eslint-enable no-proto */
 }
 
 /**
  * Augment an target Object or Array by defining
- * hidden properties.
+ * hidden properties.                    通过定义隐藏属性来增加目标对象或数组
  */
 /* istanbul ignore next */
 function copyAugment (target, src, keys) {
   for (var i = 0, l = keys.length; i < l; i++) {
     var key = keys[i];
-    def(target, key, src[key]);
+    def(target, key, src[key]);     //  target.key = src[key];
   }
 }
 
 /**
- * Attempt to create an observer instance for a value,
- * returns the new observer if successfully observed,
- * or the existing observer if the value already has one.
+ * Attempt to create an observer instance for a value,    
+ * returns the new observer if successfully observed,     检查对象上是否有__ob__属性，如果存在，
+ * or the existing observer if the value already has one. 则表明该对象已经处于Observer的观察中，如果不存在，则new Observer来观察对象 
  */
 function observe (value, asRootData) {
-  if (!isObject(value) || value instanceof VNode) {
+  if (!isObject(value) || value instanceof VNode) { 
     return
   }
   var ob;
@@ -935,20 +940,20 @@ function observe (value, asRootData) {
     ob = new Observer(value);
   }
   if (asRootData && ob) {
-    ob.vmCount++;
+    ob.vmCount++;         //增加计数  被观察对象的数量
   }
   return ob
 }
 
 /**
- * Define a reactive property on an Object.
+ * Define a reactive property on an Object.  在对象上定义活动属性  获得set和get的控制权
  */
-function defineReactive (
-  obj,
+function defineReactive (                    //    defineReactive(obj, keys[i], obj[keys[i]]); 
+  obj,                                       //                   对象   对象属性   属性值
   key,
   val,
   customSetter,
-  shallow
+  shallow     //浅
 ) {
   var dep = new Dep();
 
@@ -1005,12 +1010,12 @@ function defineReactive (
  * already exist.
  */
 function set (target, key, val) {
-  if (Array.isArray(target) && isValidArrayIndex(key)) {
+  if (Array.isArray(target) && isValidArrayIndex(key)) {          // target为数组
     target.length = Math.max(target.length, key);
     target.splice(key, 1, val);
     return val
   }
-  if (hasOwn(target, key)) {
+  if (hasOwn(target, key)) {                            // target为对象
     target[key] = val;
     return val
   }
@@ -1054,15 +1059,15 @@ function del (target, key) {
   if (!ob) {
     return
   }
-  ob.dep.notify();
+  ob.dep.notify();           // target.__ob__.dep.notify();
 }
 
 /**
  * Collect dependencies on array elements when the array is touched, since
- * we cannot intercept array element access like property getters.
+ * we cannot intercept array element access like property getters.  当数组被访问时，收集数组元素的依赖关系，因为我们不能截获数组元素访问，比如： getter。
  */
 function dependArray (value) {
-  for (var e = (void 0), i = 0, l = value.length; i < l; i++) {
+  for (var e = (void 0), i = 0, l = value.length; i < l; i++) {           // ( void 0 ) 相当于undefine;  因为undefined在js中不是保留字，所以使用void 0比较保险
     e = value[i];
     e && e.__ob__ && e.__ob__.dep.depend();
     if (Array.isArray(e)) {
@@ -1072,11 +1077,11 @@ function dependArray (value) {
 }
 
 /*  */
-
+///////////////////////////////////////////////////////////////2017/10/30////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * Option overwriting strategies are functions that handle
  * how to merge a parent option value and a child option
- * value into the final value.
+ * value into the final value.   选项覆盖策略是处理如何将 父选项值  和  子选项值  合并到  最终值  的函数。
  */
 var strats = config.optionMergeStrategies;
 

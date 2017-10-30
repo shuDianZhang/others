@@ -44,8 +44,8 @@
         //     return a + b;
         // });
 
-        // object.keys();
-        // Array.isArray();
+        // object.keys();             //返回一个数组，数组的组成为 传入对象的属性  或者 传入数组的索引值
+        // Array.isArray(obj);        //判断object是否是一个数组      
         // arr.concat();
         // arr.reduce();
         // arr.very();
@@ -62,6 +62,33 @@
         // 冻结对象
         //   Object.freeze()                意味着对象永远不会改变
         //   Object.isFrozen()
+
+        // var hasProto = '__proto__' in {};    // ie浏览器不支持 隐藏属性 __proto__ !!
+        //         判断对象是否为数组/对象的元素/属性：
+        //         格式：（变量 in 对象）......注意，，，
+        // 　　    当“对象”为数组时，“变量”指的是数组的“索引”；
+
+        // 　　    当“对象”为对象是，“变量”指的是对象的“属性”。
+        // console.log(hasProto);
+
+
+        /**
+         * 2017/10/30  700 ~ 1080
+         * /
+
+        // 实例对象 instanceof 构造函数  
+        //  mdn上边的解释
+        //  obj instanceof coustructor
+        //  instanceof 运算符用来检测 constructor.prototype 是否存在于参数 object 的原型链上。
+
+        
+        // Object.getOwnPropertyDescriptor();  返回一个json对象，例 ：{configurable: true, enumerable: true, value: "abc", writable: true}
+        // var obj = {};
+        // obj.newDataProperty = "abc";
+        // var descriptor = Object.getOwnPropertyDescriptor(obj, "newDataProperty");
+        // console.log(descriptor);
+
+        // isFinite(num);    // 如果 number 是有限数字（或可转换为有限数字），那么返回 true。否则，如果 number 是 NaN（非数字），或者是正、负无穷大的数，则返回 false。
     </script>
 </body>
 
