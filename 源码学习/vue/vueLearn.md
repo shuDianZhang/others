@@ -1,28 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
+ 2017/10/25  0 ~ 300
 
-<body>
-    <script>
-        /**  
-         * 2017/10/25  0 ~ 300
-         */
 
-        // function toString(val) {
-        //     return val == null
-        //         ? ''
-        //         : typeof val === 'object'
-        //             ? JSON.stringify(val, null, 8)     
-        //             : String(val)
-        // }
-        // alert(toString({name:'stream',age:'20'}));
-        // alert(toString([10,20,30]));
+      function toString(val) {
+           return val == null
+               ? ''
+               : typeof val === 'object'
+                 ? JSON.stringify(val, null, 8)     
+                   : String(val)
+       }
+       alert(toString({name:'stream',age:'20'}));
+       alert(toString([10,20,30]));
 
 
         // function makeMap(str, expectsLowerCase) {
@@ -44,7 +32,7 @@
         //     return a + b;
         // });
 
-        // object.keys();             //返回一个数组，数组的组成为 传入对象的属性  或者 传入数组的索引值
+        // object.keys();             //返回一个数组，数组的值成为 传入对象的属性  或者 传入数组的索引值
         // Array.isArray(obj);        //判断object是否是一个数组      
         // arr.concat();
         // arr.reduce();
@@ -76,7 +64,7 @@
          * 2017/10/30  700 ~ 1080
          * /
 
-        // 实例对象 instanceof 构造函数  
+        // 实例对象 instanceof 构造函数  （会爬原型链) object.hasOwnProperty(''); 不会爬原型链
         //  mdn上边的解释
         //  obj instanceof coustructor
         //  instanceof 运算符用来检测 constructor.prototype 是否存在于参数 object 的原型链上。
@@ -89,7 +77,38 @@
         // console.log(descriptor);
 
         // isFinite(num);    // 如果 number 是有限数字（或可转换为有限数字），那么返回 true。否则，如果 number 是 NaN（非数字），或者是正、负无穷大的数，则返回 false。
-    </script>
-</body>
 
-</html>
+
+2017/10/31    1080 ~ 1700     ------------------------------------------------------------------------------------------------------------------------------------
+     
+        // 正则表达式的学习： 取值范围+量词                 取值范围 -> []    元字符匹配
+        // function getType(fn) {
+        //     var match = fn && fn.toString().match(/^\s*function (\w+)/);
+        //     return match ? match[1] : ''
+        // }
+        // function testRex(){
+        //     alert('hello');
+        // }
+        // console.log(getType(testRex));
+        // console.log(testRex.toString());
+
+microtask 和 macrotask
+
+       macrotasks: setTimeout, setInterval, setImmediate, I/O, UI rendering
+       microtasks: process.nextTick, Promises, Object.observe(废弃), MutationObserver
+
+       在Nodejs事件循环机制中，有任务两个队列：Macrotask队列和Microtask队列。在一个事件循环里，这两个队列会
+       分两步执行，第一步会固定地执行一个（且仅一个）Macrotask任务，第二步会执行整个Microtask队列中的所有任务。
+       并且，在执行Microtask队列任务的时候，也允许加入新的Microtask任务，直到所有Microtask任务全部执行完毕，才会结束循环。
+
+        
+       每个 macrotask执行完成之后，浏览器都会进行渲染，但是每个 microtask执行结束都不会渲染
+       所以它俩的区别就在于Microtask会影响IO回调，要是不断增加Microtask的话，就一直无法渲染视图了，看上去就会卡顿。但是Macrotask就没有这种危险。
+ 
+       所以建议优先使用macrotask, 使用microtask的优点是可以立即执行! （个人的感觉是，每次函数调用栈被清空了，都会先执行microtask，有种见缝插针的感觉）
+
+       补充： setImmediate:  微软提出的一个方法，可能不被纳入w3c标准，目前只能使用在ie10
+
+MessageChannel（消息通道）:
+
+              

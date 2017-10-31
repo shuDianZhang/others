@@ -551,7 +551,7 @@ if (typeof Set !== 'undefined' && isNative(Set)) {
   }());
 }
 
-/*  */
+/*  */   //这一部分感觉是vue的错误日志的输出和追踪
 
 var warn = noop;
 var tip = noop;
@@ -1293,7 +1293,7 @@ strats.computed = function (
 strats.provide = mergeDataOrFn;
 
 /**
- * Default strategy.
+ * Default strategy.      默认合并策略
  */
 var defaultStrat = function (parentVal, childVal) {
   return childVal === undefined
@@ -1318,7 +1318,7 @@ function checkComponents (options) {
 
 /**
  * Ensure all props option syntax are normalized into the
- * Object-based format.
+ * Object-based format.    确保所有 props选项的语法  都被规范化为基于对象的格式。
  */
 function normalizeProps (options, vm) {
   var props = options.props;
@@ -1357,7 +1357,7 @@ function normalizeProps (options, vm) {
 /**
  * Normalize all injections into Object-based format
  */
-function normalizeInject (options, vm) {
+function normalizeInject (options, vm) {       // vm 是 vue new出来的实例
   var inject = options.inject;
   var normalized = options.inject = {};
   if (Array.isArray(inject)) {
@@ -1633,14 +1633,14 @@ function assertType (value, type) {
 /**
  * Use function string name to check built-in types,
  * because a simple equality check will fail when running
- * across different vms / iframes.
+ * across different vms / iframes.       使用 函数名称检查 内置类型，因为在跨不同的vm / iframe运行时，简单的等式检查会失败
  */
-function getType (fn) {
+function getType (fn) {             // 最终返回的是函数fn的函数名
   var match = fn && fn.toString().match(/^\s*function (\w+)/);
   return match ? match[1] : ''
 }
 
-function isType (type, fn) {
+function isType (type, fn) {        // isType(); 函数主要用于函数名称检查
   if (!Array.isArray(fn)) {
     return getType(fn) === getType(type)
   }
@@ -1697,7 +1697,7 @@ function logError (err, vm, info) {
     throw err
   }
 }
-
+/////////////////////////////////////////////////////////////////////////////////////2017/10/31///////////////////////////////////////////////////////////////////////////
 /*  */
 /* globals MessageChannel */
 
@@ -1712,12 +1712,11 @@ function flushCallbacks () {
     copies[i]();
   }
 }
-
 // Here we have async deferring wrappers using both micro and macro tasks.
-// In < 2.4 we used micro tasks everywhere, but there are some scenarios where
-// micro tasks have too high a priority and fires in between supposedly
-// sequential events (e.g. #4521, #6690) or even between bubbling of the same
-// event (#6566). However, using macro tasks everywhere also has subtle problems
+// In < 2.4 we used micro tasks everywhere, but there are some scenarios（脚本） where
+// micro tasks have too high a priority（优先级） and fires in between supposedly
+// sequential events (e.g. #4521, #6690) or even between bubbling（冒泡） of the same
+// event (#6566). However, using macro tasks everywhere also has subtle（细小的） problems
 // when state is changed right before repaint (e.g. #6813, out-in transitions).
 // Here we use micro task by default, but expose a way to force macro task when
 // needed (e.g. in event handlers attached by v-on).
