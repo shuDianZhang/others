@@ -111,4 +111,26 @@ microtask 和 macrotask
 
 MessageChannel（消息通道）:
 
+
+2017 / 11 / 8  
+    // Proxy代理对象
+    config.keyCodes = new Proxy(config.keyCodes, {  
+      set: function set (target, key, value) {
+        if (isBuiltInModifier(key)) {
+          warn(("Avoid overwriting built-in modifier in config.keyCodes: ." + key));
+          return false
+        } else {
+          target[key] = value;
+          return true
+        }
+      }
+    });
+
+
+     function person(name) {
+            var sname = person.name;
+            return sname;
+        }
+     alert(person('stream'));    // 返回的是 "person"
+
               

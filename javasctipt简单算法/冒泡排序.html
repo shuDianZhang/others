@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        /*
+        <1>.比较相邻的元素。如果第一个比第二个大，就交换它们两个；
+        <2>.对每一对相邻元素作同样的工作，从开始第一对到结尾的最后一对，这样在最后的元素应该会是最大的数；
+        <3>.针对所有的元素重复以上的步骤，除了最后一个；
+        <4>.重复步骤1~3，直到排序完成。  */
+        function bubbleSort(arr) {
+            var len = arr.length;   // len = 6
+            for (var i = 0; i < len; i++) {
+                for (var j = 0; j < len - 1 - i; j++) {   // j < 5
+                    if (arr[j] > arr[j + 1]) {        //相邻元素两两对比   // 0 1 2 3 4 
+                        var temp = arr[j + 1];        //元素交换
+                        arr[j + 1] = arr[j];
+                        arr[j] = temp;
+                    }
+                }
+            }
+            return arr;
+        }
+        var arr = [54, 56, 2, 1, 59, 5];
+        alert(bubbleSort(arr));
+    </script>
+</body>
+
+</html>

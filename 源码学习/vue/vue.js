@@ -303,7 +303,7 @@ function looseIndexOf (arr, val) {
 /**
  * Ensure a function is called only once.
  */
-function once (fn) {                 //once(add(4,5))();
+function once (fn) {
   var called = false;
   return function () {
     if (!called) {
@@ -699,13 +699,13 @@ function popTarget () {
 /*  */
 
 var VNode = function VNode (
-  tag,
-  data,
-  children,
-  text,
-  elm,
-  context,
-  componentOptions,
+  tag,       // 当前节点的标签名
+  data,      // 当前节点的数据对象 具体包含哪些字段可以参考对VNodeData的定义
+  children,  // 数组类型，包含当前节点的子节点
+  text,      // 当前结点的文本， 文本节点和注释节点会有该属性  
+  elm,       // 当前虚拟节点对应的真实的dom节点
+  context,   // 编译作用域
+  componentOptions,   // 创建组件实例时会用到的选项信息
   asyncFactory
 ) {
   this.tag = tag;
@@ -752,7 +752,7 @@ var createEmptyVNode = function (text) {
   return node
 };
 
-function createTextVNode (val) {
+function createTextVNode (val) {      //创建文本节点
   return new VNode(undefined, undefined, undefined, String(val))
 }
 
@@ -1729,7 +1729,7 @@ var useMacroTask = false;
 // in IE. The only polyfill that consistently queues the callback after all DOM
 // events triggered in the same loop is by using MessageChannel.
 /* istanbul ignore if */
-if (typeof setImmediate !== 'undefined' && isNative(setImmediate)) {
+if (typeof setImmediate !== 'undefined' && isNative(setImmediate)) {   // /native code/
   macroTimerFunc = function () {
     setImmediate(flushCallbacks);
   };
@@ -1751,7 +1751,7 @@ if (typeof setImmediate !== 'undefined' && isNative(setImmediate)) {
   };
 }
 
-// Determine MicroTask defer implementation.
+// Determine MicroTask defer implementation.      // 确定MicroTask推迟实现。
 /* istanbul ignore next, $flow-disable-line */
 if (typeof Promise !== 'undefined' && isNative(Promise)) {
   var p = Promise.resolve();
@@ -1770,8 +1770,8 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
 }
 
 /**
- * Wrap a function so that if any code inside triggers state change,
- * the changes are queued using a Task instead of a MicroTask.
+ * Wrap a function so that if any code inside triggers state change,  包装一个函数，这样如果里面的任何代码触发状态改变
+ * the changes are queued using a Task instead of a MicroTask.        就会使用macrotask而不是microtask来排队。
  */
 function withMacroTask (fn) {
   return fn._withTask || (fn._withTask = function () {
@@ -1837,7 +1837,7 @@ var measure;
 }
 
 /* not type checking this file because flow doesn't play well with Proxy */
-
+// 不要检查这个文件，因为流不能很好地使用代理
 var initProxy;
 
 {
@@ -1859,13 +1859,13 @@ var initProxy;
     );
   };
 
-  var hasProxy =
+  var hasProxy =              // 判断是否有 Proxy对象
     typeof Proxy !== 'undefined' &&
-    Proxy.toString().match(/native code/);
+    Proxy.toString().match(/native code/);  //native code 表示是程序自带的，是二进制编译的无法显示出来代码
 
   if (hasProxy) {
     var isBuiltInModifier = makeMap('stop,prevent,self,ctrl,shift,alt,meta,exact');
-    config.keyCodes = new Proxy(config.keyCodes, {
+    config.keyCodes = new Proxy(config.keyCodes, {  // Proxy代理对象
       set: function set (target, key, value) {
         if (isBuiltInModifier(key)) {
           warn(("Avoid overwriting built-in modifier in config.keyCodes: ." + key));
@@ -1992,7 +1992,7 @@ function mergeVNodeHook (def, hookKey, hook) {
   function wrappedHook () {
     hook.apply(this, arguments);
     // important: remove merged hook to ensure it's called only once
-    // and prevent memory leak
+    // and prevent memory leak  移除合并后的钩子保证只调用一次 防止内存泄漏
     remove(invoker.fns, wrappedHook);
   }
 
@@ -2014,17 +2014,17 @@ function mergeVNodeHook (def, hookKey, hook) {
   invoker.merged = true;
   def[hookKey] = invoker;
 }
-
+///////////////////////////////////////////////2017 / 11 /8 ////////////////////////////////////////////////////
 /*  */
 
-function extractPropsFromVNodeData (
+function extractPropsFromVNodeData (        // extract 选取
   data,
   Ctor,
   tag
 ) {
-  // we are only extracting raw values here.
-  // validation and default values are handled in the child
-  // component itself.
+  // we are only extracting raw values here.     在这里仅仅选取未处理的数值
+  // validation and default values are handled in the child     验证和默认值在子组件本身中处理。
+  // component itself.   
   var propOptions = Ctor.options.props;
   if (isUndef(propOptions)) {
     return
@@ -2063,7 +2063,7 @@ function checkProp (
   hash,
   key,
   altKey,
-  preserve
+  preserve     // 是否保存
 ) {
   if (isDef(hash)) {
     if (hasOwn(hash, key)) {
@@ -2085,18 +2085,18 @@ function checkProp (
 
 /*  */
 
-// The template compiler attempts to minimize the need for normalization by
+// The template compiler attempts to minimize the need for normalization by     在编译时间内，模板编译尝试通过静态分析模板来最小化合并需求。
 // statically analyzing the template at compile time.
-//
-// For plain HTML markup, normalization can be completely skipped because the
-// generated render function is guaranteed to return Array<VNode>. There are
-// two cases where extra normalization is needed:
+// 
+// For plain HTML markup, normalization can be completely skipped because the   对于普通的HTML标记，可以完全跳过，
+// generated render function is guaranteed to return Array<VNode>. There are    是因为生成的渲染函数保证返回数组< VNode >。
+// two cases where extra normalization is needed:                               有需要额外标准化的两个案例:
 
-// 1. When the children contains components - because a functional component
-// may return an Array instead of a single root. In this case, just a simple
-// normalization is needed - if any child is an Array, we flatten the whole
-// thing with Array.prototype.concat. It is guaranteed to be only 1-level deep
-// because functional components already normalize their own children.
+// 1. When the children contains components - because a functional component    1. 当子元素包含组件  因为功能组件
+// may return an Array instead of a single root. In this case, just a simple    可以返回一个数组而不是单个根，在这种情况下，只需简单一点
+// normalization is needed - if any child is an Array, we flatten the whole     标准化是必要的。如果任何一个子元素是一个数组，我们就会通过
+// thing with Array.prototype.concat. It is guaranteed to be only 1-level deep  Array.prototype.concat将整个系统都压平。这保证只有 1-level 深度
+// because functional components already normalize their own children.          因为功能组件已经使他们自己的子元素正常化了。
 function simpleNormalizeChildren (children) {
   for (var i = 0; i < children.length; i++) {
     if (Array.isArray(children[i])) {
@@ -2106,19 +2106,19 @@ function simpleNormalizeChildren (children) {
   return children
 }
 
-// 2. When the children contains constructs that always generated nested Arrays,
-// e.g. <template>, <slot>, v-for, or when the children is provided by user
-// with hand-written render functions / JSX. In such cases a full normalization
+// 2. When the children contains constructs that always generated nested Arrays,  2. 当子元素包含总是生成嵌套数组的构造函数时
+// e.g. <template>, <slot>, v-for, or when the children is provided by user          例如: <template>，<slot>，v-for，或者当子元素提供由用户手写的渲染函数 / JSX
+// with hand-written render functions / JSX. In such cases a full normalization      在这种情况下，为了迎合所有可能子元素的值的类型，需要全面的正常化。
 // is needed to cater to all possible types of children values.
 function normalizeChildren (children) {
-  return isPrimitive(children)
+  return isPrimitive(children)           // 当children是 string number boolean中的任意一种时，返回true
     ? [createTextVNode(children)]
     : Array.isArray(children)
       ? normalizeArrayChildren(children)
       : undefined
 }
 
-function isTextNode (node) {
+function isTextNode (node) {            // 判断是否为文本节点
   return isDef(node) && isDef(node.text) && isFalse(node.isComment)
 }
 
@@ -2184,7 +2184,7 @@ function ensureCtor (comp, base) {
     : comp
 }
 
-function createAsyncPlaceholder (
+function createAsyncPlaceholder (     //创建异步占位符
   factory,
   data,
   context,
@@ -2196,13 +2196,13 @@ function createAsyncPlaceholder (
   node.asyncMeta = { data: data, context: context, children: children, tag: tag };
   return node
 }
-
+// isTrue(test);  判断test是否为true;     isDef(test);  判断test是否为null或者undefine
 function resolveAsyncComponent (
   factory,
   baseCtor,
   context
 ) {
-  if (isTrue(factory.error) && isDef(factory.errorComp)) {
+  if (isTrue(factory.error) && isDef(factory.errorComp)) {          
     return factory.errorComp
   }
 
@@ -2237,7 +2237,7 @@ function resolveAsyncComponent (
       }
     });
 
-    var reject = once(function (reason) {
+    var reject = once(function (reason) {             // once(fn);   执行fn，并且只执行一次
       "development" !== 'production' && warn(
         "Failed to resolve async component: " + (String(factory)) +
         (reason ? ("\nReason: " + reason) : '')
@@ -2297,7 +2297,7 @@ function resolveAsyncComponent (
   }
 }
 
-/*  */
+/*  */ /////////////////////////////////////////////////////////////////////////2017/11/10///////////////////////////////////////////////////////////////////////////
 
 function isAsyncPlaceholder (node) {
   return node.isComment && node.asyncFactory
@@ -2523,7 +2523,7 @@ function resolveScopedSlots (
 var activeInstance = null;
 var isUpdatingChildComponent = false;
 
-function initLifecycle (vm) {
+function initLifecycle (vm) {           // 生命周期函数
   var options = vm.$options;
 
   // locate first non-abstract parent
@@ -2598,7 +2598,7 @@ function lifecycleMixin (Vue) {
       vm._watcher.update();
     }
   };
-
+/*  */ /////////////////////////////////////////////////////////////////////////2017/11/11///////////////////////////////////////////////////////////////////////////
   Vue.prototype.$destroy = function () {
     var vm = this;
     if (vm._isBeingDestroyed) {

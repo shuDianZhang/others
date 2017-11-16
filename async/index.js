@@ -16,7 +16,7 @@ function moveTo(obj, direction, distance, cb) {
     clearInterval(obj.timer);
     if (direction === 'left' || direction === 'right') {
         var target = posX + distance;
-        obj.timer = setInterval(function() {
+        obj.timer = setInterval(function () {
             posX = posX + speed;
             moveBox.style.left = posX + 'px';
             if (posX === target) {
@@ -26,7 +26,7 @@ function moveTo(obj, direction, distance, cb) {
         }, 10);
     } else if (direction === 'top' || direction === 'bottom') {
         var target = posY + distance;
-        obj.timer = setInterval(function() {
+        obj.timer = setInterval(function () {
             posY = posY + speed;
             moveBox.style.top = posY + 'px';
             if (posY === target) {
